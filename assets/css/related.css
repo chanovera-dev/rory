@@ -1,0 +1,30 @@
+section.block.posts--body.container--related-posts {
+    background-color: var(--wp--preset--color--tertiary);
+    padding: 3rem 0;
+    display: grid;
+    gap: 2rem;
+
+    & .content {
+        &.related-posts--title {
+            & h2.title-section {
+                text-align: center;
+            }
+        }
+
+        &.slideshow-wrapper {
+            width: var(--max-width--content);
+
+            & .slideshow {
+                & .post:not(:has(header.block.entry-header)) {
+                    & .post-body {
+                        & .post-body__footer {
+                            &::after {
+                                background: linear-gradient(to left, var(--wp--preset--color--tertiary) 0%, transparent 100%);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
