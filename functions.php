@@ -396,7 +396,8 @@ function wp_breadcrumbs()
     // 3. OTROS ARCHIVOS GENÉRICOS
     elseif (is_archive()) {
         if ($paged === 1) {
-            echo '<span>Últimos artículos de la</span>';
+            $archive_text = is_date() ? 'Últimos artículos del' : 'Últimos artículos de la';
+            echo '<span>' . $archive_text . '</span>';
             the_archive_title('<h1 class="page-title">', '</h1>');
         } else {
             echo esc_html('Página ' . $paged . ' de ');
