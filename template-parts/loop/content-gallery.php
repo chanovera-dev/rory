@@ -48,7 +48,7 @@
         </header>
         <div class="post-body__content">
             <a class="post--permalink" href="<?php the_permalink(); ?>">
-                <?php the_title('<h3 class="post--title">', '</h3>'); ?>
+                <?php the_title('<h2 class="post--title">', '</h2>'); ?>
             </a>
             <div class="post--date" style="display: flex; align-items: center; gap: 0.5rem;">
                 <?= rory_get_icon('date'); ?>

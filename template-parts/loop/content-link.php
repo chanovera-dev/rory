@@ -16,28 +16,28 @@ $title = get_the_title(); // Default title
 $image = '';
 $date = ''; // New variable for external date
 
-if ( $url && wp_http_validate_url( $url ) ) {
-    
-    // Try to retrieve data from cache
-    $transient_key = 'stories_link_preview_' . md5( $url );
-    $cached_data   = get_transient( $transient_key );
+if ($url && wp_http_validate_url($url)) {
 
-    if ( false !== $cached_data ) {
+    // Try to retrieve data from cache
+    $transient_key = 'stories_link_preview_' . md5($url);
+    $cached_data = get_transient($transient_key);
+
+    if (false !== $cached_data) {
         $title = $cached_data['title'];
         $image = $cached_data['image'];
-        $date  = $cached_data['date'];
+        $date = $cached_data['date'];
     } else {
         // Make secure request with WP HTTP API
-        $response = wp_remote_get( $url, array(
-            'timeout'     => 5,
-            'user-agent'  => 'Mozilla/5.0 (compatible; StoriesTheme/2.0; +' . home_url() . ')',
+        $response = wp_remote_get($url, array(
+            'timeout' => 5,
+            'user-agent' => 'Mozilla/5.0 (compatible; StoriesTheme/2.0; +' . home_url() . ')',
             'redirection' => 5,
-        ) );
+        ));
 
-        if ( ! is_wp_error( $response ) && 200 === wp_remote_retrieve_response_code( $response ) ) {
-            $html = wp_remote_retrieve_body( $response );
+        if (!is_wp_error($response) && 200 === wp_remote_retrieve_response_code($response)) {
+            $html = wp_remote_retrieve_body($response);
 
-            if ( $html ) {
+            if ($html) {
 
                 /**
                  * ===================================
@@ -80,7 +80,8 @@ if ( $url && wp_http_validate_url( $url ) ) {
                     if ($nodes->length > 0) {
                         foreach ($nodes as $img) {
                             $image = $img->getAttribute('src') ?: $img->getAttribute('data-src');
-                            if ($image) break;
+                            if ($image)
+                                break;
                         }
                     }
 
@@ -123,16 +124,16 @@ if ( $url && wp_http_validate_url( $url ) ) {
                 if ($date) {
                     $timestamp = strtotime($date);
                     if ($timestamp) {
-                        $date = date_i18n( 'F j, Y', $timestamp );
+                        $date = date_i18n('F j, Y', $timestamp);
                     }
                 }
 
                 // Cache for 24 hours
-                set_transient( $transient_key, array(
+                set_transient($transient_key, array(
                     'title' => $title,
                     'image' => $image,
-                    'date'  => $date,
-                ), DAY_IN_SECONDS );
+                    'date' => $date,
+                ), DAY_IN_SECONDS);
             }
         }
     }
@@ -154,7 +155,7 @@ if (empty($date)) {
     <div class="post-body">
         <header class="post-body__header">
             <div class="category post--tags">
-                <?= '<a href="' . esc_url( get_post_format_link( 'link' ) ) . '" class="post-tag">' . rory_get_icon('link') . esc_html( __('Enlace', 'stories') ) . '</a>'; ?>
+                <?= '<a href="' . esc_url(get_post_format_link('link')) . '" class="post-tag">' . rory_get_icon('link') . esc_html(__('Enlace', 'stories')) . '</a>'; ?>
             </div>
             <?php if ($image): ?>
                 <img class="wp-post-image" src="<?= esc_url($image); ?>" alt="<?= esc_attr($title); ?>" />
@@ -162,7 +163,7 @@ if (empty($date)) {
         </header>
         <div class="post-body__content">
             <a class="post--permalink" href="<?= esc_url($url); ?>" target="_blank" rel="noopener noreferrer">
-                <h3 class="post--title"><?= esc_html($title); ?></h3>
+                <h2 class="post--title"><?= esc_html($title); ?></h2>
             </a>
             <div class="post--date" style="display: flex; align-items: center; gap: 0.5rem;">
                 <?= rory_get_icon('date'); ?>
@@ -172,12 +173,12 @@ if (empty($date)) {
         <footer class="post-body__footer">
             <div class="tags post--tags">
                 <?php
-                    $tags = get_the_tags();
-                    if ( $tags ) {
-                        foreach ( $tags as $tag ) {
-                            echo '<a class="post-tag" href="' . esc_url( get_tag_link( $tag->term_id ) ) . '">'. rory_get_icon('tag') . esc_html( $tag->name ) . '</a>';
-                        }
+                $tags = get_the_tags();
+                if ($tags) {
+                    foreach ($tags as $tag) {
+                        echo '<a class="post-tag" href="' . esc_url(get_tag_link($tag->term_id)) . '">' . rory_get_icon('tag') . esc_html($tag->name) . '</a>';
                     }
+                }
                 ?>
             </div>
         </footer>
