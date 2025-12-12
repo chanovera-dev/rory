@@ -22,6 +22,11 @@ Tags:
             padding: 1.25rem 0;
             display: flex;
             justify-content: center;
+
+            & .custom-logo {
+                width: 200px;
+                height: auto;
+            }
         }
     }
 }
