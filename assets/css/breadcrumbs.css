@@ -40,6 +40,10 @@
                     }
                 }
 
+                &>span {
+                    line-height: 1;
+                }
+
                 & :is(h1.page-title, h3.property-title) {
                     font-size: var(--wp--preset--font-size--medium);
                     font-weight: 400;
