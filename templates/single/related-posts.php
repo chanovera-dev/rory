@@ -1,3 +1,16 @@
+<?php
+/**
+ * Related Posts Template Part
+ *
+ * This template handles the display of related content on single post pages.
+ * It queries posts that share the same categories or tags as the current post
+ * and presents them in a carousel/slideshow format.
+ *
+ * @package Rory
+ * @subpackage Templates
+ * @since 1.0.0
+ */
+?>
 <section class="block posts--body container--related-posts">
     <?php
     $categories = wp_get_post_categories(get_the_ID());
