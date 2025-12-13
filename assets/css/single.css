@@ -45,6 +45,14 @@
                     color: var(--wp--preset--color--primary);
                 }
             }
+
+            &:focus-visible {
+                outline: none;
+
+                & .pagination-indicator {
+                    color: var(--wp--preset--color--focus);
+                }
+            }
         }
     }
 
