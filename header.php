@@ -32,7 +32,7 @@
                     <?php
                     if (!has_custom_logo()) {
                         /* Safe site title output */
-                        printf('<a href="%s" aria-label="%s">%s</a>', esc_url(home_url('/')), esc_attr__('Home', 'stories'), esc_html(get_bloginfo('name')));
+                        printf('<a href="%s" aria-label="%s">%s</a>', esc_url(home_url('/')), esc_attr__('Home', 'rory'), esc_html(get_bloginfo('name')));
                     } else {
                         the_custom_logo();
                     }
