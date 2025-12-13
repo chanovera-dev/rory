@@ -115,7 +115,7 @@ body {
                 transition: color .3s ease;
 
                 &:hover {
-                    color: var(--wp--preset--color--accent-4);
+                    color: var(--wp--preset--color--button);
                 }
 
                 &:focus-visible {
@@ -124,6 +124,7 @@ body {
                 }
 
                 & .post--title {
+                    font-size: var(--wp--preset--font-size--large);
                     padding-top: .5rem;
                 }
             }
