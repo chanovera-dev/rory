@@ -1,0 +1,121 @@
+function toggleMenuMobile() {
+    const button = document.querySelector('.menu-mobile__button')
+    const menu = document.querySelector('.main-navigation')
+
+    if (!button || !menu) return
+
+    const isActive = button.classList.toggle('active')
+    menu.classList.toggle('open')
+
+    if (isActive) {
+        setTimeout(() => {
+            document.addEventListener('click', handleClickOutsideMenu)
+        }, 10)
+    } else {
+        document.removeEventListener('click', handleClickOutsideMenu)
+    }
+}
+
+function handleClickOutsideMenu(e) {
+    const button = document.querySelector('.menu-mobile__button')
+    const menu = document.querySelector('.main-navigation')
+
+    if (!menu || !button) return
+
+    const clickedInsideMenu = menu.contains(e.target)
+    const clickedToggleButton = button.contains(e.target)
+
+    if (!clickedInsideMenu && !clickedToggleButton) {
+        closeMenuMobile()
+    }
+}
+
+function handleClickOutsideSearch(e) {
+    const button = document.querySelector('.search-mobile__button')
+    const searchform = document.querySelector('#custom-searchform')
+
+    if (!searchform || !button) return
+
+    const clickedSearchform = searchform.contains(e.target)
+    const clickedToggleButton = button.contains(e.target)
+
+    if (!clickedSearchform && !clickedToggleButton) {
+        closeCustomSearchform()
+    }
+}
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' || event.key === 'Esc') {
+        if (typeof closeCustomSearchform === 'function') {
+            closeCustomSearchform()
+            closeMenuMobile()
+        }
+    }
+})
+
+function toggleCustomSearchform() {
+    const button = document.querySelector('.search-mobile__button')
+    const searchform = document.querySelector('#custom-searchform')
+
+    if (!button || !searchform) return
+
+    const isActive = button.classList.toggle('active')
+    searchform.classList.toggle('show')
+
+    if (isActive) {
+        setTimeout(() => {
+            document.addEventListener('click', handleClickOutsideSearch)
+        }, 10)
+    } else {
+        document.removeEventListener('click', handleClickOutsideSearch)
+    }
+}
+
+function closeCustomSearchform() {
+    const button = document.querySelector('.search-mobile__button')
+    const searchform = document.querySelector('#custom-searchform')
+
+    if (button) button.classList.remove('active')
+    if (searchform) searchform.classList.remove('show')
+
+    document.removeEventListener('click', handleClickOutsideSearch)
+}
+
+function menuWithChildren() {
+    const menuItems = document.querySelectorAll('.menu-item-has-children')
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+
+            if (e.target.tagName === 'A') {
+                return;
+            }
+
+            e.preventDefault()
+            e.stopPropagation()
+
+            item.classList.toggle('open')
+
+            const subMenu = item.querySelector('.sub-menu')
+            if (subMenu) {
+                const childrenCount = subMenu.children.length
+                const transitionTime = childrenCount * 0.1
+                subMenu.style.transition = `max-height ${transitionTime}s ease-in-out`
+                subMenu.classList.toggle('open')
+            }
+        })
+    })
+}
+document.addEventListener('DOMContentLoaded', menuWithChildren)
+
+function closeMenuMobile() {
+    const button = document.querySelector('.menu-mobile__button')
+    const menu = document.querySelector('.main-navigation')
+
+    if (!button || !menu) return
+
+    button.classList.remove('active')
+    menu.classList.remove('open')
+
+    document.removeEventListener('click', handleClickOutsideMenu)
+}

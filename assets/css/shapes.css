@@ -296,6 +296,11 @@ body {
     }
 }
 
+.glass-backdrop {
+    background-color: light-dark(var(--wp--preset--color--base-alpha-50), var(--wp--preset--color--base-alpha-50-night));
+    backdrop-filter: blur(1rem);
+}
+
 .rory-block-search__inside-wrapper {
     position: relative;
 
