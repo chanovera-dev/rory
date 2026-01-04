@@ -50,7 +50,7 @@ function setup_rory()
     add_theme_support('customize-selective-refresh-widgets');
     add_theme_support('wp-block-styles');
     add_theme_support('align-wide');
-    add_theme_support('post-thumbnails', ['post', 'page']);
+    add_theme_support('post-thumbnails', ['post', 'page', 'nsfw']);
     set_post_thumbnail_size(350, 200, true);
     add_image_size('loop-thumbnail', 400, 400, true);
 }
@@ -388,7 +388,17 @@ function wp_breadcrumbs()
         echo $current . 'Minientradas más recientes';
     }
 
-    // 2. CATEGORÍA
+    // 2. ARCHIVO CPT NSFW
+    elseif (is_post_type_archive('nsfw')) {
+        if ($paged === 1) {
+            echo '<span>' . esc_html__('Últimos artículos de', 'rory') . '</span>';
+            echo '<h1 class="page-title">' . esc_html__('Contenido NSFW', 'rory') . '</h1>';
+        } else {
+            echo '<span>' . esc_html__('Página ', 'rory') . $paged . esc_html__(' de ', 'rory') . '</span>' . '<h1 class="page-title">' . esc_html__('todo el contenido NSFW', 'rory') . '</h1>';
+        }
+    }
+
+    // 3. CATEGORÍA
     elseif (is_category()) {
         if ($paged === 1) {
             echo '<span>Últimos artículos de la</span>';
@@ -398,7 +408,7 @@ function wp_breadcrumbs()
             the_archive_title('<h1 class="page-title">', '</h1>');
         }
     }
-    // 3. OTROS ARCHIVOS GENÉRICOS
+    // 4. OTROS ARCHIVOS GENÉRICOS
     elseif (is_archive()) {
         if ($paged === 1) {
             $archive_text = is_date() ? 'Últimos artículos del' : 'Últimos artículos de la';
@@ -450,7 +460,8 @@ function wp_breadcrumbs()
         if (get_post_type() != 'post') {
             $post_type = get_post_type_object(get_post_type());
             $slug = $post_type->rewrite;
-            echo '<a href="' . $homeLink . '/' . $slug['slug'] . '/">' . $post_type->labels->singular_name . '</a>' . $separator;
+            $label = (get_post_type() === 'nsfw') ? esc_html__('Contenido NSFW', 'rory') : $post_type->labels->singular_name;
+            echo '<a href="' . $homeLink . '/' . $slug['slug'] . '/">' . $label . '</a>' . $separator;
             if ($showCurrent == 1)
                 echo $current . ' ';
         } else {
@@ -602,7 +613,8 @@ add_action('customize_register', 'rory_customize_register');
  * @param object $args Menu arguments
  * @return string Modified menu item HTML
  */
-function custom_menu($item_output, $item, $depth, $args) {
+function custom_menu($item_output, $item, $depth, $args)
+{
     $allowed_locations = ['primary'];
 
     if (!isset($args->theme_location) || !in_array($args->theme_location, $allowed_locations)) {
@@ -912,7 +924,7 @@ function rory_has_related_posts($post_id = null)
  */
 function posts_styles()
 {
-    if (is_home() or is_archive() or is_search()) {
+    if (is_home() || is_archive() || is_search() || is_page_template('archive-nsfw.php')) {
         $a = rory_get_assets();
 
         global $wp_query;
@@ -1011,3 +1023,20 @@ function page404_styles()
     }
 }
 add_action('wp_enqueue_scripts', 'page404_styles');
+
+/*
+ * =========================================================================
+ * CUSTOM POST TYPE ARCHIVE
+ * =========================================================================
+ */
+
+/**
+ * Filter to ensure the 'nsfw' custom post type has an archive enabled.
+ * This makes get_post_type_archive_link('nsfw') work correctly.
+ */
+add_filter('register_post_type_args', function ($args, $post_type) {
+    if ($post_type === 'nsfw') {
+        $args['has_archive'] = true;
+    }
+    return $args;
+}, 10, 2);
