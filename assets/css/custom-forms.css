@@ -73,6 +73,20 @@ textarea {
     height: 6rem;
 }
 
+select {
+    background-image: url('../../assets/icons/select-image.svg');
+    background-repeat: no-repeat;
+    background-size: 5px 10px;
+    background-position: right .75rem center;
+    padding-right: calc(.75rem * 2 + 5px);
+}
+
+/*
+ * =========================================================================
+ * BUTTONS
+ * =========================================================================
+ */
+
 .btn,
 #submit,
 .wpcf7-submit,
