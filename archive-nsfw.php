@@ -24,16 +24,9 @@ get_header(); ?>
         <div class="content">
             <div class="loop">
                 <?php
-                $args = array(
-                    'post_type' => 'nsfw',
-                    'post_status' => 'publish',
-                    'paged' => get_query_var('paged') ? get_query_var('paged') : 1,
-                );
-                $query = new WP_Query($args);
-
-                if ($query->have_posts()) {
-                    while ($query->have_posts()) {
-                        $query->the_post();
+                if (have_posts()) {
+                    while (have_posts()) {
+                        the_post();
                         $post_format = get_post_format();
                         $part = 'archive';
 
@@ -54,7 +47,6 @@ get_header(); ?>
                 } else {
                     echo '<p>' . esc_html__('No se encontraron artículos', 'stories') . '</p>';
                 }
-                wp_reset_postdata();
                 ?>
             </div>
         </div>
