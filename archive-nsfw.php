@@ -2,12 +2,9 @@
 /**
  * Archive 'NSFW' Template
  * 
- * Template name: Archivo de 'nsfw'
- *
- * This template displays archive-type pages, including categories, tags, authors,
- * and custom post type archives. It includes a header with the archive title,
- * a loop that lists posts using 'content-archive' template parts, and pagination.
- * If no posts are found, a friendly message is displayed.
+ * This template displays the archive for the 'nsfw' custom post type.
+ * It includes a header with the archive title, a loop that lists posts,
+ * and standard pagination.
  *
  * @package rory
  * @since 1.0.0

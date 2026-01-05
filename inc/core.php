@@ -924,7 +924,7 @@ function rory_has_related_posts($post_id = null)
  */
 function posts_styles()
 {
-    if (is_home() || is_archive() || is_search() || is_page_template('archive-nsfw.php')) {
+    if (is_home() || is_archive() || is_search() || is_post_type_archive('nsfw') || is_page_template('archive-nsfw.php')) {
         $a = rory_get_assets();
 
         global $wp_query;
@@ -1032,11 +1032,28 @@ add_action('wp_enqueue_scripts', 'page404_styles');
 
 /**
  * Filter to ensure the 'nsfw' custom post type has an archive enabled.
- * This makes get_post_type_archive_link('nsfw') work correctly.
+ * This makes archive-nsfw.php work automatically.
  */
 add_filter('register_post_type_args', function ($args, $post_type) {
     if ($post_type === 'nsfw') {
-        $args['has_archive'] = true;
+        $args['has_archive'] = 'nsfw'; // Enable archive at /nsfw/
+        $args['rewrite'] = array('slug' => 'nsfw');
     }
     return $args;
 }, 10, 2);
+
+/**
+ * Configure the main query for the 'nsfw' archive.
+ * This ensures pagination works correctly and filters the main loop.
+ */
+function rory_nsfw_archive_query($query)
+{
+    if (!is_admin() && $query->is_main_query() && is_post_type_archive('nsfw')) {
+        $query->set('post_type', 'nsfw');
+        $query->set('post_status', 'publish');
+        // El número de posts por página se toma de Ajustes > Lectura por defecto,
+        // pero puedes forzarlo aquí si lo deseas:
+        // $query->set('posts_per_page', 10);
+    }
+}
+add_action('pre_get_posts', 'rory_nsfw_archive_query');
