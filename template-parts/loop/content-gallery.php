@@ -25,14 +25,14 @@ stories_enqueue_script('loop-gallery', $a['js']['loop-gallery']);
             <div class="gallery-wrapper">
                 <div class="gallery" style="display: flex;">
                     <?php
-                    if (function_exists('rory_extract_gallery_images')) {
+                    if (function_exists('stories_extract_gallery_images')) {
 
-                        $ids = rory_extract_gallery_images(get_the_ID());
+                        $ids = stories_extract_gallery_images(get_the_ID());
 
                         if (!empty($ids)) {
                             foreach ($ids as $id) {
                                 echo '<div class="slide">';
-                                echo wp_get_attachment_image($id, 'loop-thumbnail', false, ['style' => 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;']);
+                                echo wp_get_attachment_image($id, 'loop-thumbnail', false, ['style' => 'position: absolute; top: .5rem; left: .5rem; width: calc(100% - 1rem); height: calc(100% - .5rem); object-fit: cover;']);
                                 echo '</div>';
                             }
                         }
