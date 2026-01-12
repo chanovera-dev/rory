@@ -7,9 +7,9 @@
  * @package Rory
  * @since 1.0.0
  */
-$a = stories_get_assets();
+$a = rory_get_assets();
 require_once get_template_directory() . '/templates/helpers/extract-gallery-images.php';
-stories_enqueue_script('loop-gallery', $a['js']['loop-gallery']);
+rory_enqueue_script('loop-gallery', $a['js']['loop-gallery']);
 ?>
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?> data-id="<?= get_the_ID(); ?>">
     <div class="post-body">
@@ -25,14 +25,14 @@ stories_enqueue_script('loop-gallery', $a['js']['loop-gallery']);
             <div class="gallery-wrapper">
                 <div class="gallery" style="display: flex;">
                     <?php
-                    if (function_exists('stories_extract_gallery_images')) {
+                    if (function_exists('rory_extract_gallery_images')) {
 
-                        $ids = stories_extract_gallery_images(get_the_ID());
+                        $ids = rory_extract_gallery_images(get_the_ID());
 
                         if (!empty($ids)) {
                             foreach ($ids as $id) {
                                 echo '<div class="slide">';
-                                echo wp_get_attachment_image($id, 'loop-thumbnail', false, ['style' => 'position: absolute; top: .5rem; left: .5rem; width: calc(100% - 1rem); height: calc(100% - .5rem); object-fit: cover;']);
+                                echo wp_get_attachment_image($id, 'loop-thumbnail', false, ['style' => 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;']);
                                 echo '</div>';
                             }
                         }
