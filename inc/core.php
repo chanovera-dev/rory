@@ -927,22 +927,6 @@ function posts_styles()
     if (is_home() || is_archive() || is_search() || is_post_type_archive('nsfw') || is_page_template('archive-nsfw.php')) {
         $a = rory_get_assets();
 
-        global $wp_query;
-
-        $has_gallery = false;
-
-        foreach ($wp_query->posts as $post) {
-            if (has_block('core/gallery', $post) || has_shortcode($post->post_content, 'gallery')) {
-                $has_gallery = true;
-                break;
-            }
-        }
-
-        if ($has_gallery) {
-            require_once get_template_directory() . '/templates/helpers/extract-gallery-images.php';
-            rory_enqueue_script('loop-gallery', $a['js']['loop-gallery']);
-        }
-
         rory_enqueue_style('breadcrumbs', $a['css']['breadcrumbs']);
         rory_enqueue_style('posts-styles', $a['css']['posts-styles']);
         rory_enqueue_style('pagination', $a['css']['pagination']);
