@@ -924,7 +924,7 @@ function rory_has_related_posts($post_id = null)
  */
 function posts_styles()
 {
-    if (is_home() || is_archive() || is_search() || is_post_type_archive('nsfw') || is_page_template('archive-nsfw.php')) {
+    if (is_home() || is_archive() || is_search() || is_post_type_archive('nsfw')) {
         $a = rory_get_assets();
 
         rory_enqueue_style('breadcrumbs', $a['css']['breadcrumbs']);
