@@ -7,6 +7,9 @@
  * @package Rory
  * @since 1.0.0
  */
+$a = stories_get_assets();
+require_once get_template_directory() . '/templates/helpers/extract-gallery-images.php';
+stories_enqueue_script('loop-gallery', $a['js']['loop-gallery']);
 ?>
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?> data-id="<?= get_the_ID(); ?>">
     <div class="post-body">
