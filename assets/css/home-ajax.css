@@ -17,7 +17,7 @@
 .site-main {
     & .block {
         &.filters-section {
-            background-color: var(--wp--preset--color--white);
+            background-color: var(--wp--preset--color--base);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 
             & .home-filters-control {

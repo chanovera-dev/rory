@@ -57,6 +57,87 @@ function setup_rory()
 add_action('after_setup_theme', 'setup_rory');
 
 /**
+ * Overrides theme.json palette with custom colors from the "Datos del tema" options page.
+ *
+ * @param WP_Theme_JSON_Data $theme_json The theme JSON data object.
+ * @return WP_Theme_JSON_Data Modified theme JSON data.
+ */
+function rory_override_theme_json_colors($theme_json)
+{
+    // List of core colors we want to override
+    $color_ids = array(
+        'base',
+        'contrast',
+        'primary',
+        'secondary',
+        'tertiary',
+        'background',
+        'button',
+        'footer-background',
+        'focus',
+        'bullet-active'
+    );
+
+    // Get default colors from our helper function in options-page.php
+    if (!function_exists('rory_get_color_themes')) {
+        return $theme_json;
+    }
+
+    $themes = rory_get_color_themes();
+    $default_colors = $themes['default']['colors'];
+
+    $new_palette = array();
+    foreach ($color_ids as $id) {
+        $color_value = get_option('rory_color_' . $id, $default_colors[$id] ?? '#000000');
+        
+        $new_palette[] = array(
+            'slug' => $id,
+            'color' => $color_value,
+            'name' => ucfirst(str_replace('-', ' ', $id))
+        );
+
+        // Generate Alpha 50 version (approx 80 alpha in hex)
+        // Only for certain colors that use it in the theme
+        if (in_array($id, ['primary', 'secondary', 'focus', 'base'])) {
+            $new_palette[] = array(
+                'slug' => $id . '-alpha-50',
+                'color' => $color_value . '80', // Append 80 for ~50% opacity
+                'name' => ucfirst(str_replace('-', ' ', $id)) . ' Alpha 50'
+            );
+        }
+    }
+
+    // Add Accent Alpha versions using color-mix as used in theme.json
+    // These help keep compatibility with some hardcoded styles
+    $new_palette[] = array(
+        'slug' => 'contrast-alpha-50',
+        'color' => 'color-mix(in srgb, currentColor 50%, transparent)',
+        'name' => 'Contrast Alpha 50'
+    );
+    
+    // Add default accents if they are missing to avoid breaking layout
+    for ($i = 1; $i <= 7; $i++) {
+        $new_palette[] = array(
+            'slug' => 'accent-' . $i,
+            'color' => 'color-mix(in srgb, currentColor ' . ($i * 10) . '%, transparent)',
+            'name' => 'Accent ' . $i
+        );
+    }
+
+    $new_data = array(
+        'version' => 3,
+        'settings' => array(
+            'color' => array(
+                'palette' => $new_palette
+            )
+        )
+    );
+
+    return $theme_json->update_with($new_data);
+}
+add_filter('wp_theme_json_data_theme', 'rory_override_theme_json_colors');
+
+/**
  * Gets the version of a file based on its modification time.
  *
  * @param string $file_path Relative path to the file.
