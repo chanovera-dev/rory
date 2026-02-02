@@ -281,7 +281,7 @@ function rory_home_featured_image_render()
     $value = get_option('rory_home_featured_image');
     ?>
     <div class="rory-media-uploader">
-        <input type="text" name="rory_home_featured_image" id="rory_home_featured_image" value="<?php echo esc_attr($value); ?>" class="large-text" style="margin-bottom: 10px;">
+        <input type="text" name="rory_home_featured_image" id="rory_home_featured_image" value="<?php echo esc_attr($value); ?>" class="large-text" style="display: none;">
         <div class="rory-media-preview" style="margin-bottom: 10px;">
             <?php if ($value) : ?>
                 <img src="<?php echo esc_url($value); ?>" style="max-width: 200px; height: auto; border: 1px solid #ccc; display: block;">
