@@ -32,7 +32,7 @@ if (has_post_thumbnail()) {
     
     <article id="post-<?php the_ID(); ?>" <?php post_class('justified-post'); ?> style="padding-bottom: <?php echo esc_attr((1 / $ratio) * 100); ?>%;">
         <a class="post--permalink btn-pagination small-pagination glass-backdrop" href="<?php the_permalink(); ?>" style="position: absolute; top: 0; right: 0; z-index: 2;"
-            aria-label="Ver la galería de <?= esc_attr($post_title); ?>">
+            aria-label="Ver la galería de <?= esc_attr(the_title()); ?>">
             <?= rory_get_icon('permalink'); ?>
         </a>
             <?php

@@ -114,6 +114,17 @@ function rory_add_options_page()
 add_action('admin_menu', 'rory_add_options_page');
 
 /**
+ * Enqueue Media Uploader scripts for the options page.
+ */
+function rory_options_media_scripts($hook) {
+    if ('toplevel_page_rory-options' !== $hook) {
+        return;
+    }
+    wp_enqueue_media();
+}
+add_action('admin_enqueue_scripts', 'rory_options_media_scripts');
+
+/**
  * Register settings, sections, and fields.
  */
 function rory_register_settings()
@@ -128,6 +139,11 @@ function rory_register_settings()
         'type' => 'string',
         'sanitize_callback' => 'wp_kses_post',
         'default' => __('Estudiante y fanatico de la cultura y estilo de arte asiatico estilizado, me gusta crear cosas que se vean lindas o cool.', 'rory'),
+    ));
+
+    register_setting('rory_options_group', 'rory_home_featured_image', array(
+        'type' => 'string',
+        'sanitize_callback' => 'esc_url_raw',
     ));
 
     // Color Settings
@@ -161,6 +177,14 @@ function rory_register_settings()
         'rory_bio',
         __('Biografía Corta', 'rory'),
         'rory_bio_render',
+        'rory-options',
+        'rory_site_data_section'
+    );
+
+    add_settings_field(
+        'rory_home_featured_image',
+        __('Imagen destacada Home (URL)', 'rory'),
+        'rory_home_featured_image_render',
         'rory-options',
         'rory_site_data_section'
     );
@@ -247,6 +271,27 @@ function rory_ga_id_render()
 
     echo '<input type="text" name="rory_ga_id" value="' . esc_attr($value) . '" class="regular-text" placeholder="G-XXXXXXXXXX">';
     echo '<p class="description">' . __('Ingresa tu ID de Google Analytics (ej. G-XXXXXXXXXX).', 'rory') . '</p>';
+}
+
+/**
+ * Render the featured image field.
+ */
+function rory_home_featured_image_render()
+{
+    $value = get_option('rory_home_featured_image');
+    ?>
+    <div class="rory-media-uploader">
+        <input type="text" name="rory_home_featured_image" id="rory_home_featured_image" value="<?php echo esc_attr($value); ?>" class="large-text" style="margin-bottom: 10px;">
+        <div class="rory-media-preview" style="margin-bottom: 10px;">
+            <?php if ($value) : ?>
+                <img src="<?php echo esc_url($value); ?>" style="max-width: 200px; height: auto; border: 1px solid #ccc; display: block;">
+            <?php endif; ?>
+        </div>
+        <button type="button" class="button rory-upload-button" id="rory_upload_btn"><?php _e('Seleccionar imagen', 'rory'); ?></button>
+        <button type="button" class="button rory-remove-button" id="rory_remove_btn" style="<?php echo $value ? '' : 'display:none;'; ?>"><?php _e('Quitar imagen', 'rory'); ?></button>
+        <p class="description"><?php _e('Selecciona una imagen de la biblioteca de medios.', 'rory'); ?></p>
+    </div>
+    <?php
 }
 
 /**
@@ -347,6 +392,37 @@ function rory_render_options_page()
                 if (code && code.tagName === 'CODE') {
                     code.textContent = this.value;
                 }
+            });
+        });
+
+        // --- Lógica del Media Uploader ---
+        jQuery(document).ready(function($) {
+            var mediaUploader;
+            $('#rory_upload_btn').click(function(e) {
+                e.preventDefault();
+                if (mediaUploader) {
+                    mediaUploader.open();
+                    return;
+                }
+                mediaUploader = wp.media({
+                    title: '<?php _e("Seleccionar Imagen", "rory"); ?>',
+                    button: { text: '<?php _e("Usar esta imagen", "rory"); ?>' },
+                    multiple: false
+                });
+                mediaUploader.on('select', function() {
+                    var attachment = mediaUploader.state().get('selection').first().toJSON();
+                    $('#rory_home_featured_image').val(attachment.url);
+                    $('.rory-media-preview').html('<img src="' + attachment.url + '" style="max-width: 200px; height: auto; border: 1px solid #ccc; display: block;">');
+                    $('#rory_remove_btn').show();
+                });
+                mediaUploader.open();
+            });
+
+            $('#rory_remove_btn').click(function(e) {
+                e.preventDefault();
+                $('#rory_home_featured_image').val('');
+                $('.rory-media-preview').empty();
+                $(this).hide();
             });
         });
     </script>

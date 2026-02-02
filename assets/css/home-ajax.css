@@ -160,7 +160,7 @@ input:checked+.slider:before {
       flex-grow y flex-basis se configuran inline desde PHP 
       basados en el aspect ratio real de cada imagen 
     */
-    height: var(--row-height);
+    /* Quitamos height fijo para que el padding-bottom del article mande */
     max-width: 100%;
     /* Evita desbordamientos */
     overflow: hidden;
@@ -177,22 +177,21 @@ input:checked+.slider:before {
 }
 
 .ajax-item-wrapper article {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding-bottom: 0 !important;
-    /* Desactivar padding hack de PHP si conflictúa */
-    height: 100%;
+    position: relative;
+    /* Cambiado de absolute para permitir que el padding-bottom funcione */
+    height: 0;
+    /* El alto lo da el padding-bottom */
     width: 100%;
 }
 
 .ajax-item-wrapper img.post-thumbnail {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Recorte suave si el ajuste flex no es perfecto */
+    /* Ahora cover coincide exactamente con el ratio del contenedor */
     display: block;
     transition: transform 0.3s ease;
 }

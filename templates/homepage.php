@@ -62,6 +62,47 @@ $categories = get_categories([
         <div class="content">
             <div id="ajax-posts-container">
                 <?php
+                // 1. Mostrar artículo destacado desde opciones si existe
+                $f_img_url = get_option('rory_home_featured_image');
+
+                if (!empty($f_img_url)) : 
+                    // Calcular Aspect Ratio con la misma lógica del loop
+                    $ratio = 1; // Default cuadrado
+                    $width = 300;
+                    $height = 300;
+
+                    $f_img_id = attachment_url_to_postid($f_img_url);
+
+                    if ($f_img_id) {
+                        $img_data = wp_get_attachment_image_src($f_img_id, 'medium_large');
+                        if ($img_data) {
+                            $width = $img_data[1];
+                            $height = $img_data[2];
+                            // Evitar división por cero
+                            if ($height > 0) {
+                                $ratio = $width / $height;
+                            }
+                        }
+                    }
+                    ?>
+                    <div class="ajax-item-wrapper featured-home-item" 
+                        style="flex-grow: <?php echo esc_attr($ratio * 100); ?>; flex-basis: calc( var(--row-height, 250px) * <?php echo esc_attr($ratio); ?> );" 
+                        data-ratio="<?php echo esc_attr($ratio); ?>"
+                        data-year="<?php echo date('Y'); ?>">
+                        
+                        <article class="justified-post" style="padding-bottom: <?php echo esc_attr((1 / $ratio) * 100); ?>%;">
+                            <?php if ($f_img_id) : ?>
+                                <?php echo wp_get_attachment_image($f_img_id, 'medium_large', false, [
+                                    'class' => 'post-thumbnail'
+                                ]); ?>
+                            <?php else : ?>
+                                <img src="<?php echo esc_url($f_img_url); ?>" class="post-thumbnail" alt="<?php echo esc_attr(get_bloginfo('name')); ?>">
+                            <?php endif; ?>
+                        </article>
+                    </div>
+                <?php endif; ?>
+
+                <?php
                 // Query Inicial (Solo Posts normales, Status publish)
                 // Reproducimos el estado inicial "Todos + No NSFW"
                 $initial_args = [
