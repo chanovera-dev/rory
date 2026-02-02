@@ -1,0 +1,264 @@
+/* ==========================================================================
+   HOMEPAGE FILTERS & LAYOUT
+   ========================================================================== */
+
+:root {
+    --row-height: 200px;
+    /* Altura base para móviles */
+}
+
+@media (min-width: 768px) {
+    :root {
+        --row-height: 300px;
+        /* Altura más grande en desktop */
+    }
+}
+
+.site-main {
+    & .block {
+        &.filters-section {
+            background-color: var(--wp--preset--color--white);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+            & .home-filters-control {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 2rem;
+                padding: .5rem 0;
+
+                & .cat-filter-btn {
+                    appearance: none;
+                    background: transparent;
+                    border: 1px solid transparent;
+                    padding: 0.5rem 1rem;
+                    font-size: 0.9rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    color: var(--wp--preset--color--contrast);
+
+                    &:hover {
+                        border-color: var(--wp--preset--color--accent-6);
+                    }
+
+                    &.active {
+                        background-color: var(--wp--preset--color--primary);
+                        border-color: var(--wp--preset--color--primary);
+                    }
+                }
+            }
+        }
+
+        &.posts--body {
+            & .content {
+                padding-bottom: 2rem;
+            }
+        }
+    }
+}
+
+/* --- Wrapper de Controles --- */
+
+
+/* --- Botones de Categorías --- */
+.cat-filters-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+
+/* --- NSFW Toggle Switch --- */
+.nsfw-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nsfw-toggle-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--wp--preset--color--primary);
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px var(--wp--preset--color--primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(22px);
+}
+
+/* --- JUSTIFIED GRID LAYOUT (FLICKR STYLE) --- */
+#ajax-posts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    /* Espacio pequeño entre fotos como referencia */
+}
+
+/* Truco para que la última fila no se expanda monstruosamente */
+#ajax-posts-container::after {
+    content: '';
+    flex-grow: 999999999;
+}
+
+.ajax-item-wrapper {
+    position: relative;
+    margin: 2px;
+    /* Margen visual */
+    /* 
+      flex-grow y flex-basis se configuran inline desde PHP 
+      basados en el aspect ratio real de cada imagen 
+    */
+    height: var(--row-height);
+    max-width: 100%;
+    /* Evita desbordamientos */
+    overflow: hidden;
+    border-radius: 2px;
+
+    &:has(.gallery-wrapper) {
+        & article {
+            & .post-overlay {
+                bottom: unset;
+                top: 0;
+            }
+        }
+    }
+}
+
+.ajax-item-wrapper article {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding-bottom: 0 !important;
+    /* Desactivar padding hack de PHP si conflictúa */
+    height: 100%;
+    width: 100%;
+}
+
+.ajax-item-wrapper img.post-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Recorte suave si el ajuste flex no es perfecto */
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.post-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, .5);
+    backdrop-filter: blur(1rem);
+    padding: .5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ajax-item-wrapper:hover .post-overlay {
+    opacity: 1;
+}
+
+
+
+/* 
+ * CRITICAL FIX: Override global animations that hide posts 
+ */
+#ajax-posts-container .post,
+#ajax-posts-container .nsfw,
+.ajax-item-wrapper .post,
+.ajax-item-wrapper .nsfw,
+.ajax-item-wrapper {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    animation: none !important;
+}
+
+/* --- Loader --- */
+.ajax-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 3rem;
+    grid-column: 1 / -1;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: var(--wp--preset--color--primary);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.no-results {
+    width: 100%;
+    text-align: center;
+    padding: 2rem;
+    border-radius: 8px;
+}

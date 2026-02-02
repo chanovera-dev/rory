@@ -132,6 +132,7 @@ function rory_get_assets()
             'related-styles' => "$assets_path/css/related.css",
             'comments' => "$assets_path/css/comments.css",
             'error404' => "$assets_path/css/error404.css",
+            'homepage' => "$assets_path/css/homepage.css",
         ],
         'js' => [
             // All pages
@@ -144,6 +145,7 @@ function rory_get_assets()
             'post-gallery-script' => "$assets_path/js/post-gallery.js",
             'related-script' => "$assets_path/js/related.js",
             'post-scripts' => "$assets_path/js/post.js",
+            'homepage-script' => "$assets_path/js/homepage.js",
         ]
     ];
 }
@@ -924,6 +926,11 @@ function rory_has_related_posts($post_id = null)
  */
 function posts_styles()
 {
+    // Skip if we're on the homepage template (it has its own scripts)
+    if (is_page_template('templates/homepage.php')) {
+        return;
+    }
+
     if (is_home() || is_archive() || is_search() || is_post_type_archive('nsfw')) {
         $a = rory_get_assets();
 
@@ -1041,3 +1048,124 @@ function rory_nsfw_archive_query($query)
     }
 }
 add_action('pre_get_posts', 'rory_nsfw_archive_query');
+
+/*
+ * =========================================================================
+ * HOMEPAGE AJAX FILTERS
+ * =========================================================================
+ */
+
+/**
+ * Enqueue assets specifically for the Homepage Template
+ */
+function rory_enqueue_home_assets() {
+    if (is_page_template('templates/homepage.php')) {
+        // CSS propio para la home
+        wp_enqueue_style(
+            'rory-home-ajax', 
+            get_template_directory_uri() . '/assets/css/home-ajax.css', 
+            ['global'], // Dependencia base
+            time() // Cache busting durante desarrollo
+        );
+
+        // JS Galería (Necesario para que funcione en AJAX)
+        $assets = rory_get_assets(); // Obtener rutas desde tu helper si existe variable, o usar path directo
+        // Asumo que 'loop-gallery' está registrado o lo encolamos directo
+        wp_enqueue_script(
+            'loop-gallery', 
+            get_template_directory_uri() . '/assets/js/loop-gallery.js', 
+            ['jquery'], 
+            time(), 
+            true
+        );
+
+        // JS para la lógica
+        wp_enqueue_script(
+            'rory-home-ajax', 
+            get_template_directory_uri() . '/assets/js/home-ajax.js', 
+            ['jquery'], 
+            time(), 
+            true
+        );
+
+        wp_localize_script('rory-home-ajax', 'rory_ajax', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('rory_home_nonce')
+        ]);
+    }
+}
+add_action('wp_enqueue_scripts', 'rory_enqueue_home_assets');
+
+/**
+ * AJAX Handler for filtering posts
+ */
+function rory_filter_posts_handler() {
+    // 1. Verificar seguridad
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'rory_home_nonce')) {
+        wp_send_json_error(['message' => 'Permiso denegado.']);
+        die();
+    }
+
+    // 2. Recibir y limpiar parámetros
+    // 2. Recibir y limpiar parámetros
+    // Procesar categorías como array
+    $cats = isset($_POST['categories']) ? $_POST['categories'] : [];
+    if (!is_array($cats)) {
+        $cats = [];
+    }
+    // Asegurar enteros
+    $cats = array_map('intval', $cats);
+    $cats = array_filter($cats); // Quitar 0s o vacíos
+
+    $show_nsfw = isset($_POST['nsfw']) && $_POST['nsfw'] === 'true' ? true : false;
+    $paged = isset($_POST['paged']) ? intval($_POST['paged']) : 1;
+
+    // 3. Configurar Query Arguments
+    $args = [
+        'post_status' => 'publish',
+        'paged'       => $paged,
+        'posts_per_page' => 12, // Forzamos 12 posts
+        'orderby'     => 'date',
+        'order'       => 'DESC',
+        'ignore_sticky_posts' => 1,
+    ];
+
+    // Lógica de Tipos de Post
+    $args['post_type'] = $show_nsfw ? ['post', 'nsfw'] : ['post'];
+
+    // Lógica de Categorías Múltiples
+    if (!empty($cats)) {
+        $args['category__in'] = $cats;
+    }
+
+    // 4. Ejecutar Query
+    $query = new WP_Query($args);
+
+    // 5. Generar HTML
+    if ($query->have_posts()) {
+        ob_start();
+        while ($query->have_posts()) {
+            $query->the_post();
+            
+            // Usamos tu partial existente.
+            // El wrapper se genera DENTRO del template part para calcular aspect-ratio
+            get_template_part('template-parts/loop/content', 'ajax');
+        }
+        $html = ob_get_clean();
+
+        // Calcular si hay más páginas
+        $max_pages = $query->max_num_pages;
+
+        wp_send_json_success([
+            'html' => $html,
+            'max_pages' => $max_pages
+        ]);
+    } else {
+        wp_send_json_error(['message' => 'No se encontraron contenidos.']);
+    }
+
+    wp_reset_postdata();
+    die();
+}
+add_action('wp_ajax_rory_filter_posts', 'rory_filter_posts_handler');
+add_action('wp_ajax_nopriv_rory_filter_posts', 'rory_filter_posts_handler');
