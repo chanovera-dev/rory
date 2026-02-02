@@ -1138,6 +1138,16 @@ function rory_filter_posts_handler() {
         $args['category__in'] = $cats;
     }
 
+    // Lógica de Formatos: SOLO Imagen y Galería
+    $args['tax_query'] = [
+        [
+            'taxonomy' => 'post_format',
+            'field'    => 'slug',
+            'terms'    => ['post-format-image', 'post-format-gallery'],
+            'operator' => 'IN'
+        ]
+    ];
+
     // 4. Ejecutar Query
     $query = new WP_Query($args);
 

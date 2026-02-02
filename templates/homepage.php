@@ -69,7 +69,15 @@ $categories = get_categories([
                     'post_status'    => 'publish',
                     'posts_per_page' => 12, // Forzamos 12 posts
                     'orderby'        => 'date',
-                    'order'          => 'DESC'
+                    'order'          => 'DESC',
+                    'tax_query'      => [
+                        [
+                            'taxonomy' => 'post_format',
+                            'field'    => 'slug',
+                            'terms'    => ['post-format-image', 'post-format-gallery'],
+                            'operator' => 'IN'
+                        ]
+                    ]
                 ];
                 $initial_query = new WP_Query($initial_args);
 

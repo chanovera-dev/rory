@@ -35,7 +35,7 @@ function initGallery(wrapper) {
     slides.forEach(slide => {
         slide.style.width = `${100 / totalSlides}%`
         slide.style.transition = "transform 0.5s ease, opacity 0.5s ease"
-        slide.style.transform = "scale(0.5)"
+        slide.style.transform = "scale(1)"
         slide.style.opacity = "0.75"
         slide.style.position = "relative"
     })
@@ -72,7 +72,7 @@ function initGallery(wrapper) {
     function updateActiveClasses(index = currentSlide, shouldGrow = true) {
         slides.forEach(slide => {
             slide.classList.remove("active")
-            slide.style.transform = "scale(0.5)"
+            slide.style.transform = "scale(1)"
             slide.style.opacity = "0.75"
         })
 
