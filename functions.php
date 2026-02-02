@@ -38,6 +38,7 @@ if (!defined('RORY_VERSION')) {
  */
 $inc_files = array(
     'core' => 'inc/core.php',
+    'options' => 'inc/options-page.php',
 );
 
 foreach ($inc_files as $key => $relative_path) {

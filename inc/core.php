@@ -320,14 +320,24 @@ add_action('wp_head', 'theme_custom_icons');
  */
 function add_gtm_header()
 {
+    $default = 'G-7XNN23WGQT';
+    $ga_id = get_option('rory_ga_id');
+    
+    if (false === $ga_id) {
+        $ga_id = get_theme_mod('stories_ga_id', $default);
+    }
+
+    if (!$ga_id) {
+        return;
+    }
     ?>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0000000000"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr($ga_id); ?>"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
 
-        gtag('config', 'G-0000000000', { 'transport_type': 'beacon', 'send_page_view': false });
+        gtag('config', '<?php echo esc_js($ga_id); ?>', { 'transport_type': 'beacon', 'send_page_view': false });
     </script>
     <?php
 }
@@ -557,45 +567,6 @@ function rory_get_icon($type)
 
     return $icons[$type] ?? '';
 }
-
-/*
- * =========================================================================
- * CUSTOMIZER SETTINGS
- * =========================================================================
- */
-
-/**
- * Theme Customizer Settings for Rory
- *
- * This file adds a custom section to the WordPress Customizer
- * that allows administrators to set site-specific data such as
- * a short bio or description. All fields include sanitization
- * and translation support for better security and flexibility.
- */
-function rory_customize_register($wp_customize)
-{
-
-    // ====== SECTION: Site Data ======
-    $wp_customize->add_section('rory_site_data', array(
-        'title' => __('Site Data', 'rory'),
-        'description' => __('Define basic information about your website.', 'rory'),
-        'priority' => 11,
-    ));
-
-    // ====== SETTING: Short Bio ======
-    $wp_customize->add_setting('rory_bio', array(
-        'default' => __('Relatos y Cartas es un espacio dedicado a la creatividad y la expresión a través de las palabras. Aquí encontrarás cuentos, microcuentos, poemas e historias que buscan inspirar, emocionar y conectar con los lectores.', 'rory'),
-        'sanitize_callback' => 'wp_kses_post', // Allows safe HTML
-    ));
-
-    // ====== CONTROL: Short Bio ======
-    $wp_customize->add_control('rory_bio', array(
-        'label' => __('Short Bio', 'rory'),
-        'section' => 'rory_site_data',
-        'type' => 'textarea',
-    ));
-}
-add_action('customize_register', 'rory_customize_register');
 
 /*
  * =========================================================================
