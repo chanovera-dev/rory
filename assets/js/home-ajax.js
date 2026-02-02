@@ -101,6 +101,9 @@ jQuery(document).ready(function ($) {
                         $container.html(res.data.html);
                     }
 
+                    // Actualizar etiquetas de año
+                    setTimeout(updateYearLabels, 150); // Pequeño delay para asegurar que el grid se asentó
+
                     // Gestión del Botón Ver Más
                     const maxPages = parseInt(res.data.max_pages);
                     $loadMoreBtn.data('page', currentPage);
@@ -139,4 +142,53 @@ jQuery(document).ready(function ($) {
             }
         });
     }
+
+    /**
+     * Genera etiquetas flotantes para los años
+     */
+    function updateYearLabels() {
+        // Eliminar etiquetas existentes que no sean del loader o after
+        $container.find('.year-float-label').remove();
+
+        let lastYear = null;
+        let lastTop = -1;
+        const $items = $container.find('.ajax-item-wrapper');
+
+        $items.each(function () {
+            const currentYear = $(this).data('year');
+            const pos = $(this).position();
+
+            if (currentYear && currentYear !== lastYear) {
+                // Es el primer item de este año
+                let top = pos.top;
+
+                // Evitar que etiquetas de distintos años se pisen si empiezan en la misma fila
+                if (Math.abs(top - lastTop) < 20) {
+                    top += 40;
+                }
+
+                const $label = $('<div class="year-float-label">— ' + currentYear + '</div>');
+
+                // Posicionar relativo al item
+                $label.css({
+                    'top': top + 'px',
+                    'opacity': 1
+                });
+
+                $container.append($label);
+                lastYear = currentYear;
+                lastTop = top;
+            }
+        });
+    }
+
+    // Inicializar etiquetas al cargar
+    updateYearLabels();
+
+    // Actualizar al redimensionar la ventana
+    let resizeTimer;
+    $(window).on('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(updateYearLabels, 250);
+    });
 });

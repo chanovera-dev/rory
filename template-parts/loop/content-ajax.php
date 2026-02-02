@@ -25,7 +25,10 @@ if (has_post_thumbnail()) {
 ?>
 
 <!-- Wrapper con Aspect Ratio calculado -->
-<div class="ajax-item-wrapper" style="flex-grow: <?php echo esc_attr($ratio * 100); ?>; flex-basis: calc( var(--row-height, 250px) * <?php echo esc_attr($ratio); ?> );" data-ratio="<?php echo esc_attr($ratio); ?>">
+<div class="ajax-item-wrapper" 
+    style="flex-grow: <?php echo esc_attr($ratio * 100); ?>; flex-basis: calc( var(--row-height, 250px) * <?php echo esc_attr($ratio); ?> );" 
+    data-ratio="<?php echo esc_attr($ratio); ?>"
+    data-year="<?php echo get_the_date('Y'); ?>">
     
     <article id="post-<?php the_ID(); ?>" <?php post_class('justified-post'); ?> style="padding-bottom: <?php echo esc_attr((1 / $ratio) * 100); ?>%;">
         <a class="post--permalink btn-pagination small-pagination glass-backdrop" href="<?php the_permalink(); ?>" style="position: absolute; top: 0; right: 0; z-index: 2;"
