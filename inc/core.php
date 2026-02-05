@@ -1176,7 +1176,7 @@ function rory_filter_posts_handler() {
     $args = [
         'post_status' => 'publish',
         'paged'       => $paged,
-        'posts_per_page' => 12, // Forzamos 12 posts
+        'posts_per_page' => 24, // Forzamos 12 posts
         'orderby'     => 'date',
         'order'       => 'DESC',
         'ignore_sticky_posts' => 1,
