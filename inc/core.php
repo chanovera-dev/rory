@@ -1153,12 +1153,15 @@ add_action('wp_enqueue_scripts', 'rory_enqueue_home_assets');
  */
 function rory_filter_posts_handler() {
     // 1. Verificar seguridad
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'rory_home_nonce')) {
-        wp_send_json_error(['message' => 'Permiso denegado.']);
+    // Para usuarios no logueados somos más flexibles para evitar fallos por cache de página
+    $nonce = isset($_POST['nonce']) ? $_POST['nonce'] : '';
+    $nonce_valido = wp_verify_nonce($nonce, 'rory_home_nonce');
+
+    if (!$nonce_valido && is_user_logged_in()) {
+        wp_send_json_error(['message' => 'Sesión expirada. Recarga la página.']);
         die();
     }
 
-    // 2. Recibir y limpiar parámetros
     // 2. Recibir y limpiar parámetros
     // Procesar categorías como array
     $cats = isset($_POST['categories']) ? $_POST['categories'] : [];
