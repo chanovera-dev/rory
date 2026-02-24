@@ -7,7 +7,6 @@
  *  - Theme setup (menus, theme support, image sizes).
  *  - Asset management (enqueuing scripts and styles with versioning).
  *  - Custom Gutenberg block rendering and filters.
- *  - Theme Customizer settings (e.g., bio, social links).
  *  - Template tags and helper functions (breadcrumbs, icons).
  *
  * It is included by functions.php and acts as the backbone for
@@ -46,7 +45,7 @@ function setup_rory()
     add_theme_support('automatic-feed-links');
     add_theme_support('custom-logo', array('height' => 32, 'width' => 172, 'flex-height' => true, 'flex-width' => true, ));
     add_theme_support('html5', apply_filters('chanovera_html5_args', array('search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'widgets', 'style', 'script', )));
-    add_theme_support('post-formats', array('aside', 'image', 'video', 'quote', 'link', 'gallery', ));
+    add_theme_support('post-formats', array('aside', 'image', 'video', 'quote', 'link', 'gallery', 'audio', ));
     add_theme_support('customize-selective-refresh-widgets');
     add_theme_support('wp-block-styles');
     add_theme_support('align-wide');
@@ -404,8 +403,8 @@ function add_gtm_header()
     $default = 'G-7XNN23WGQT';
     $ga_id = get_option('rory_ga_id');
     
-    if (false === $ga_id) {
-        $ga_id = get_theme_mod('stories_ga_id', $default);
+    if (false === $ga_id || empty($ga_id)) {
+        $ga_id = get_theme_mod('rory_ga_id', $default);
     }
 
     if (!$ga_id) {

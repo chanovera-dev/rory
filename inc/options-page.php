@@ -132,13 +132,17 @@ function rory_register_settings()
     register_setting('rory_options_group', 'rory_ga_id', array(
         'type' => 'string',
         'sanitize_callback' => 'sanitize_text_field',
-        'default' => 'G-0000000000',
     ));
 
     register_setting('rory_options_group', 'rory_bio', array(
         'type' => 'string',
         'sanitize_callback' => 'wp_kses_post',
-        'default' => __('Estudiante y fanatico de la cultura y estilo de arte asiatico estilizado, me gusta crear cosas que se vean lindas o cool.', 'rory'),
+    ));
+
+    register_setting('rory_options_group', 'rory_footer_title', array(
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_text_field',
+        'default' => __('Sobre ', 'rory') . get_bloginfo('name'),
     ));
 
     register_setting('rory_options_group', 'rory_home_featured_image', array(
@@ -169,6 +173,14 @@ function rory_register_settings()
         'rory_ga_id',
         __('Google Analytics ID', 'rory'),
         'rory_ga_id_render',
+        'rory-options',
+        'rory_site_data_section'
+    );
+
+    add_settings_field(
+        'rory_footer_title',
+        __('Título Sección Pie de Página', 'rory'),
+        'rory_footer_title_render',
         'rory-options',
         'rory_site_data_section'
     );
@@ -240,6 +252,18 @@ function rory_section_callback()
 }
 
 /**
+ * Render the Footer Title field.
+ */
+function rory_footer_title_render()
+{
+    $default = __('Sobre ', 'rory') . get_bloginfo('name');
+    $value = get_option('rory_footer_title', $default);
+
+    echo '<input type="text" name="rory_footer_title" value="' . esc_attr($value) . '" class="regular-text">';
+    echo '<p class="description">' . __('Este título aparecerá sobre la biografía en el pie de página.', 'rory') . '</p>';
+}
+
+/**
  * Render the Bio field.
  */
 function rory_bio_render()
@@ -248,7 +272,7 @@ function rory_bio_render()
     
     // Try to get from option first, then from theme_mod, finally use default.
     $value = get_option('rory_bio');
-    if (false === $value) {
+    if (false === $value || empty($value)) {
         $value = get_theme_mod('rory_bio', $default);
     }
 
@@ -265,8 +289,8 @@ function rory_ga_id_render()
     
     // Try to get from option first, then from theme_mod, finally use default.
     $value = get_option('rory_ga_id');
-    if (false === $value) {
-        $value = get_theme_mod('stories_ga_id', $default);
+    if (false === $value || empty($value)) {
+        $value = get_theme_mod('rory_ga_id', $default);
     }
 
     echo '<input type="text" name="rory_ga_id" value="' . esc_attr($value) . '" class="regular-text" placeholder="G-XXXXXXXXXX">';

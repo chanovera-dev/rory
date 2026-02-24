@@ -11,17 +11,18 @@
     <section class="block middle-footer">
         <div class="content">
             <div class="about">
-                <h3 class="title-section">Sobre <?php bloginfo('title'); ?></h3>
+                <?php
+                $footer_title = get_option('rory_footer_title', __('Sobre ', 'rory') . get_bloginfo('name'));
+                ?>
+                <h3 class="title-section"><?php echo esc_html($footer_title); ?></h3>
                 <p class="site-bio">
                     <?php
-                    $bio = get_option(
-                        'rory_bio',
-                        get_theme_mod(
-                            'rory_bio',
-                            __('Relatos y Cartas es un espacio dedicado a la creatividad y la expresión a través de las palabras. Aquí encontrarás cuentos, microcuentos, poemas e historias que buscan inspirar, emocionar y conectar con los lectores.', 'rory')
-                        )
-                    );
-                    echo esc_html($bio);
+                    $bio_default = __('Relatos y Cartas es un espacio dedicado a la creatividad y la expresión a través de las palabras. Aquí encontrarás cuentos, microcuentos, poemas e historias que buscan inspirar, emocionar y conectar con los lectores.', 'rory');
+                    $bio = get_option('rory_bio');
+                    if (false === $bio || empty($bio)) {
+                        $bio = get_theme_mod('rory_bio', $bio_default);
+                    }
+                    echo wp_kses_post($bio);
                     ?>
                 </p>
                 <?php
